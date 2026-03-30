@@ -1,0 +1,37 @@
+# @req REQ-INFRA-001 Helm deployment playbook
+---
+- name: Deploy SDD Navigator via Helm
+  hosts: localhost
+  gather_facts: no
+  vars:
+    helm_chart_path: "{{ playbook_dir }}/../../helm/sdd-navigator"
+    environment: "{{ lookup('env', 'ENVIRONMENT') | default('dev') }}"
+  tasks:
+    - name: Check if Helm is installed
+      ansible.builtin.command: helm version
+      register: helm_check
+      failed_when: false
+
+    - name: Install Helm if missing
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+      when: helm_check.rc != 0
+
+    - name: Run Helm installer
+      ansible.builtin.command: /tmp/get_helm.sh
+      when: helm_check.rc != 0
+
+    - name: Deploy Helm release
+      ansible.builtin.command: |
+        helm upgrade --install sdd-navigator {{ helm_chart_path }} \
+          --namespace sdd-{{ environment }} \
+          --create-namespace \
+          -f {{ helm_chart_path }}/values-{{ environment }}.yaml \
+          --wait
+      register: helm_deploy
+
+    - name: Show deployment status
+      ansible.builtin.debug:
+        msg: "{{ helm_deploy.stdout_lines }}"

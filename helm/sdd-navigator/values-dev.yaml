@@ -1,0 +1,9 @@
+# @req REQ-INFRA-005 Development environment overrides
+namespace: sdd-dev
+api:
+  replicaCount: 1
+web:
+  replicaCount: 1
+postgres:
+  storage:
+    size: 5Gi

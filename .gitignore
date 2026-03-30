@@ -1,0 +1,19 @@
+# Rust
+app/api/target/
+app/api/Cargo.lock
+
+# Next.js
+app/web/.next/
+app/web/node_modules/
+app/web/package-lock.json
+
+# K8s
+kubeconfig
+*.kubeconfig
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store

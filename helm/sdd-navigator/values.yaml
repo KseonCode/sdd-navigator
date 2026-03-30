@@ -1,0 +1,56 @@
+# @req REQ-INFRA-005 Environment-agnostic defaults
+# Override via values-dev.yaml or values-staging.yaml
+
+namespace: sdd-dev
+
+api:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: sdd-navigator-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+web:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: sdd-navigator-web
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    enabled: true
+    host: sdd-navigator.local
+    path: /
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+  storage:
+    size: 10Gi
+  database: sdd_navigator
+  user: postgres
+  password: changeme
+  port: 5432

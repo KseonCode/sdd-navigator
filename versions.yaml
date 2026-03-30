@@ -1,0 +1,24 @@
+# @req REQ-INFRA-005 Single source for all versions and environment configs
+app:
+  api:
+    image: sdd-navigator-api
+    tag: latest
+    port: 8080
+  web:
+    image: sdd-navigator-web
+    tag: latest
+    port: 3000
+
+postgres:
+  image: postgres
+  tag: "16-alpine"
+  port: 5432
+  storage: 10Gi
+
+environments:
+  dev:
+    namespace: sdd-dev
+    replicas: 1
+  staging:
+    namespace: sdd-staging
+    replicas: 2

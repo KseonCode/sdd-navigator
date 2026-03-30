@@ -1,0 +1,66 @@
+# @req REQ-INFRA-007 CI pipeline with deterministic checks
+name: SDD Validation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Lint Rust
+        run: make lint-api
+
+  lint-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: cd app/web && npm ci
+      - name: Lint Web
+        run: make lint-web
+
+  lint-helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v3
+      - uses: yannh/kubernetes-json-schema-action@v4
+      - name: Lint Helm
+        run: make lint-helm
+
+  lint-ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ansible-lint
+        run: pip install ansible ansible-lint
+      - name: Lint Ansible
+        run: make lint-ansible
+
+  traceability-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check annotations
+        run: ./scripts/check_traceability.sh
+
+  hybrid-pattern-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find potential issues for AI review
+        run: |
+          echo "🔍 Finding TODOs and FIXMEs for AI review..."
+          grep -rn "TODO\|FIXME" app/ helm/ ansible/ || echo "No issues found"
+          echo "✅ Hybrid check complete - these would be sent to AI for judgment"

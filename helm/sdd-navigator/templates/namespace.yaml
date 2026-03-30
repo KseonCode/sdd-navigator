@@ -1,0 +1,7 @@
+# @req REQ-INFRA-001 Namespace for isolation
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  labels:
+    {{- include "sdd-navigator.labels" . | nindent 4 }}
