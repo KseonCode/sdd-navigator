@@ -1,3 +1,4 @@
+# @req REQ-INFRA-001 SDD Navigator Helm chart
 apiVersion: v2
 name: sdd-navigator
 description: SDD Navigator stack - Rust API, PostgreSQL, Next.js

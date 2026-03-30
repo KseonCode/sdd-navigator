@@ -8,17 +8,17 @@ echo "🔍 Checking traceability annotations..."
 
 FAILED=0
 
-# Check Rust files
+# Check Rust files (exclude target directory)
 while IFS= read -r file; do
     if ! grep -q "@req REQ-INFRA-" "$file"; then
         echo "❌ Missing @req annotation: $file"
         FAILED=1
     fi
-done < <(find app/api -name "*.rs" -type f 2>/dev/null || true)
+done < <(find app/api -name "*.rs" -type f -not -path "*/target/*" 2>/dev/null || true)
 
-# Check Helm templates
+# Check Helm templates (including .tpl files, exclude values files)
 while IFS= read -r file; do
-    if ! grep -q "# @req REQ-INFRA-" "$file"; then
+    if ! grep -q -E "(# @req|{{-? /\* @req)" "$file"; then
         echo "❌ Missing @req annotation: $file"
         FAILED=1
     fi

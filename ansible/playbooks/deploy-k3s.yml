@@ -1,16 +1,19 @@
 # @req REQ-INFRA-006 K3s installation playbook
 ---
 - name: Install k3s on target VM
-  hosts: all
-  become: yes
+  hosts: k8s_nodes
+  become: true
   vars:
     k3s_version: v1.28.5+k3s1
   tasks:
     - name: Install k3s
-      ansible.builtin.shell: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -
+      ansible.builtin.shell: |
+        set -o pipefail
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -
       args:
         creates: /usr/local/bin/k3s
       register: k3s_install
+      changed_when: false
 
     - name: Get kubeconfig
       ansible.builtin.slurp:
@@ -24,3 +27,5 @@
         mode: '0600'
       delegate_to: localhost
       run_once: true
+      throttle: 1
+      become: false

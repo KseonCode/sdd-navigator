@@ -1,5 +1,5 @@
 // @req REQ-INFRA-002 Health check with database connectivity
-use actix_web::{get, HttpResponse, Responder, web};
+use actix_web::{get, web, HttpResponse, Responder};
 use sqlx::PgPool;
 
 #[get("/health")]
