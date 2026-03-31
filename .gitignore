@@ -6,14 +6,58 @@ app/api/Cargo.lock
 app/web/.next/
 app/web/node_modules/
 app/web/package-lock.json
+app/web/.env.local
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.sample
+app/api/.env
+app/web/.env
 
 # K8s
 kubeconfig
 *.kubeconfig
+helm/**/charts/
+helm/**/Chart.lock
+**/charts/*.tgz
+
+# Ansible
+ansible/*.retry
+ansible/inventory/hosts
+ansible/.ansible/
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+**/docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Secrets
+*.pem
+*.key
+*.crt
+secrets/
+
+# Test coverage
+coverage/
+.coverage

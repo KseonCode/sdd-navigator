@@ -47,10 +47,10 @@ postgres:
   enabled: true
   image:
     repository: postgres
-    tag: 16-alpine
+    tag: 15-alpine
   storage:
     size: 10Gi
   database: sdd_navigator
   user: postgres
-  password: changeme
+  password: postgres
   port: 5432
