@@ -2,7 +2,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  // Enable standalone output for Docker deployment
-}
+  async rewrites() {
+    const apiUrl = process.env.API_URL || 'http://localhost:8080';
 
-module.exports = nextConfig
+    return [
+      {
+        source: '/health',
+        destination: `${apiUrl}/health`,
+      },
+      {
+        source: '/health/:path*',
+        destination: `${apiUrl}/health/:path*`,
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
