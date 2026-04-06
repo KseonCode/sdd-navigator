@@ -9,8 +9,7 @@ export default function Home() {
   const [status, setStatus] = useState<string>('checking');
 
   useEffect(() => {
-    // Используем прокси — просто /health
-    fetch('/health')
+    fetch('/api/health')
       .then(res => res.json())
       .then(data => setStatus(data.status))
       .catch(() => setStatus('unreachable'));
@@ -51,7 +50,7 @@ export default function Home() {
         </div>
 
         <div className="copyright">
-          © 2026 SDD Navigator | KseonCode
+          © 2026 KseonCode
         </div>
       </div>
     </div>
