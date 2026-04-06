@@ -1,3 +1,7 @@
+# @req REQ-INFRA-001 Docker Compose for local development
+# @req REQ-INFRA-002 API service configuration
+# @req REQ-INFRA-003 PostgreSQL service configuration
+# @req REQ-INFRA-004 Frontend service configuration
 services:
   postgres:
     image: postgres:15-alpine
@@ -12,6 +16,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - sdd-network
 
@@ -26,6 +34,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://api:8080/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     networks:
       - sdd-network
 
@@ -33,18 +47,27 @@ services:
     build: ./app/web
     container_name: sdd-web
     environment:
-      API_URL: ${WEB_API_URL}
+      API_URL: ${API_URL}
+      NODE_ENV: production
     ports:
       - "${WEB_PORT}:3000"
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     networks:
       - sdd-network
 
 networks:
   sdd-network:
     name: sdd-network
+    driver: bridge
 
 volumes:
   postgres_data:
+    driver: local

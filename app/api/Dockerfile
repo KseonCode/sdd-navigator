@@ -18,7 +18,7 @@ RUN cargo build --target x86_64-unknown-linux-musl --release && \
 FROM alpine:latest
 
 # Устанавливаем ca-certificates и создаем пользователя
-RUN apk add --no-cache ca-certificates && \
+RUN apk add --no-cache ca-certificates curl && \
     addgroup -g 1000 -S appgroup && \
     adduser -u 1000 -S appuser -G appgroup
 
@@ -31,7 +31,7 @@ USER appuser
 
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD wget -q --spider http://localhost:8080/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 \
+    CMD curl -f http://localhost:8080/health || exit 1
 
 CMD ["sdd-navigator-api"]

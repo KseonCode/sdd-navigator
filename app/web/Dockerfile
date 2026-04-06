@@ -17,7 +17,7 @@ FROM node:20-alpine AS runner
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001 -G nodejs && \
-    apk add --no-cache wget
+    apk add --no-cache curl
 
 WORKDIR /app
 
@@ -34,7 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
 
 CMD ["node", "server.js"]
