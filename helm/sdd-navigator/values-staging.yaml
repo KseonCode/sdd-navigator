@@ -1,11 +1,44 @@
 # @req REQ-INFRA-005 Staging environment overrides
-namespace: sdd-staging
-api:
-  replicaCount: 2
-web:
-  replicaCount: 2
-  ingress:
-    host: staging.sdd-navigator.local
+namespace: sdd-navigator-staging
+
 postgres:
   storage:
-    size: 20Gi
+    size: 10Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+api:
+  replicas: 2
+  rustLog: info
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+web:
+  replicas: 2
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+ingress:
+  enabled: true
+  hosts:
+    - host: staging.sdd-navigator.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web
+          port: 3000

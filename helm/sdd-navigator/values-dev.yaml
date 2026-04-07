@@ -1,9 +1,37 @@
 # @req REQ-INFRA-005 Development environment overrides
-namespace: sdd-dev
-api:
-  replicaCount: 1
-web:
-  replicaCount: 1
+namespace: sdd-navigator-dev
+
 postgres:
   storage:
     size: 5Gi
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+api:
+  replicas: 1
+  rustLog: debug
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+web:
+  replicas: 1
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+ingress:
+  enabled: false

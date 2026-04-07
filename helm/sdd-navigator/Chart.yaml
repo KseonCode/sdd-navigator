@@ -1,7 +1,19 @@
 # @req REQ-INFRA-001 SDD Navigator Helm chart
 apiVersion: v2
 name: sdd-navigator
-description: SDD Navigator stack - Rust API, PostgreSQL, Next.js
+description: SDD Navigator - Stack Rust API, Next.js frontend, PostgreSQL, Kubernetes, Helm, Ansible 
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
+keywords:
+  - rust
+  - nextjs
+  - postgresql
+  - kubernetes
+  - helm
+  - ansible
+home: https://github.com/KseonCode/sdd-navigator
+sources:
+  - https://github.com/KseonCode/sdd-navigator
+maintainers:
+  - name: KseonCode

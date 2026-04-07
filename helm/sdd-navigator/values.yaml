@@ -1,56 +1,95 @@
 # @req REQ-INFRA-005 Environment-agnostic defaults
-# Override via values-dev.yaml or values-staging.yaml
+# Глобальные настройки
+namespace: sdd-navigator
 
-namespace: sdd-dev
-
-api:
-  enabled: true
-  replicaCount: 1
-  image:
-    repository: sdd-navigator-api
-    tag: latest
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 8080
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
-
-web:
-  enabled: true
-  replicaCount: 1
-  image:
-    repository: sdd-navigator-web
-    tag: latest
-    pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 3000
-  ingress:
-    enabled: true
-    host: sdd-navigator.local
-    path: /
-  resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
-
+# Настройки PostgreSQL
 postgres:
   enabled: true
   image:
     repository: postgres
-    tag: 15-alpine
-  storage:
-    size: 10Gi
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
   database: sdd_navigator
   user: postgres
   password: postgres
   port: 5432
+  storage:
+    size: 10Gi
+    className: ""  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Настройки Rust API
+api:
+  enabled: true
+  image:
+    repository: sdd-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8080
+  replicas: 2
+  rustLog: info
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  env:
+    RUST_BACKTRACE: "1"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Настройки Next.js Frontend
+web:
+  enabled: true
+  image:
+    repository: sdd-web
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 3000
+  replicas: 2
+  nodePort: 30001
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  env:
+    NODE_ENV: "production"
+    NEXT_TELEMETRY_DISABLED: "1"
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# Настройки Ingress
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: sdd-navigator.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web
+          port: 3000
+        - path: /api
+          pathType: Prefix
+          service: api
+          port: 8080
+  tls: []
