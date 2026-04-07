@@ -1,0 +1,25 @@
+# @req REQ-SEC-004 Frontend to API network isolation
+# @req REQ-INFRA-002 API access control from frontend
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-web-to-api
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: networking
+    from: web
+    to: api
+spec:
+  podSelector:
+    matchLabels:
+      app: sdd-api  # Целевой под (API)
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: sdd-web  # Разрешаем трафик только от Web
+    ports:
+    - protocol: TCP
+      port: {{ .Values.api.port }}

@@ -1,0 +1,15 @@
+# @req REQ-INFRA-002 API ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "api.labels" . | nindent 4 }}
+data:
+  RUST_LOG: {{ .Values.api.rustLog }}
+  HOST: "0.0.0.0"
+  PORT: "{{ .Values.api.port }}"
+  {{- range $key, $value := .Values.api.env }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

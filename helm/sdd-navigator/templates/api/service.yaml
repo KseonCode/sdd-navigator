@@ -1,0 +1,17 @@
+# @req REQ-INFRA-002 API service
+apiVersion: v1
+kind: Service
+metadata:
+  name: sdd-api
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "api.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: sdd-api
+  ports:
+  - port: {{ .Values.api.port }}
+    targetPort: {{ .Values.api.port }}
+    protocol: TCP
+    name: http

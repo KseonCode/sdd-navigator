@@ -1,0 +1,17 @@
+# @req REQ-INFRA-003 PostgreSQL headless service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres
+  ports:
+  - port: {{ .Values.postgres.port }}
+    targetPort: {{ .Values.postgres.port }}
+    protocol: TCP
+    name: postgres

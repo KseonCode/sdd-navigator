@@ -1,0 +1,25 @@
+# @req REQ-SEC-005 External ingress access to frontend
+# @req REQ-INFRA-004 Frontend external access control
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-web
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: networking
+    from: ingress
+    to: web
+spec:
+  podSelector:
+    matchLabels:
+      app: sdd-web  # Целевой под (Web)
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx  # Ingress namespace
+    ports:
+    - protocol: TCP
+      port: {{ .Values.web.port }}

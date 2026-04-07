@@ -1,0 +1,15 @@
+# @req REQ-SEC-001 Default deny all ingress traffic
+# @req REQ-SEC-002 Zero-trust network policy implementation
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: networking
+    policy-type: base
+spec:
+  podSelector: {} 
+  policyTypes:
+  - Ingress
+  

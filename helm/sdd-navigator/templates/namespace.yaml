@@ -4,4 +4,5 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
   labels:
-    {{- include "sdd-navigator.labels" . | nindent 4 }}
+    name: {{ .Values.namespace }}
+    environment: {{ .Values.environment | default "development" }}

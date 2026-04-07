@@ -1,0 +1,11 @@
+# @req REQ-INFRA-003 PostgreSQL ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "postgres.labels" . | nindent 4 }}
+data:
+  POSTGRES_DB: {{ .Values.postgres.database }}
+  PGDATA: /var/lib/postgresql/data/pgdata

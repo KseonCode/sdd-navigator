@@ -1,0 +1,25 @@
+# @req REQ-SEC-003 API to PostgreSQL network isolation
+# @req REQ-INFRA-003 PostgreSQL database access control
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-api-to-postgres
+  namespace: {{ .Values.namespace }}
+  labels:
+    component: networking
+    from: api
+    to: postgres
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres  # Целевой под (PostgreSQL)
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: sdd-api  # Разрешаем трафик только от API
+    ports:
+    - protocol: TCP
+      port: {{ .Values.postgres.port }}
