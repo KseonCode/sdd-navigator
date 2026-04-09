@@ -31,9 +31,9 @@ postgres:
 api:
   enabled: true
   image:
-    repository: sdd-api
+    repository: sdd-navigator-api
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
   port: 8080
   replicas: 2
   rustLog: info
@@ -54,9 +54,9 @@ api:
 web:
   enabled: true
   image:
-    repository: sdd-web
+    repository: sdd-navigator-web
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
   port: 3000
   replicas: 2
   nodePort: 30001
