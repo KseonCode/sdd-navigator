@@ -1,0 +1,33 @@
+---
+# Main playbook - полный цикл развертывания
+- name: Copy project files to notebook
+  hosts: notebook
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    project_dir: "/home/{{ ansible_user }}/sdd-navigator"
+  
+  tasks:
+#
+#     - name: Create project directory
+#       file:
+#         path: "{{ project_dir }}"
+#         state: directory
+#         owner: "{{ ansible_user }}"
+#         mode: '0755'
+#
+#     - name: Clone application code from GitHub
+#       git:
+#         repo: "https://github.com/KseonCode/sdd-navigator.git"
+#         dest: "{{ project_dir }}"
+#         version: main
+#         force: yes
+
+# Импортируем playbooks
+- import_playbook: 00-preparation.yml
+- import_playbook: 01-install-docker.yml
+- import_playbook: 02-install-k3s.yml
+- import_playbook: 03-install-helm.yml
+- import_playbook: 04-build-images.yml
+- import_playbook: 05-deploy-app.yml

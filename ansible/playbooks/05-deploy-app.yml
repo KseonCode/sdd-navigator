@@ -1,0 +1,55 @@
+---
+- name: Deploy to Kubernetes
+  hosts: notebook
+  become: no
+  
+  vars:
+    namespace: sdd-navigator
+    project_dir: /home/{{ ansible_user }}/sdd-navigator
+    
+  tasks:
+    # Импортируем образы в K3s (containerd)
+    - name: Import images to K3s
+      command: sudo /usr/local/bin/k3s ctr images import /tmp/{{ item }}
+      loop:
+        - sdd-navigator-api.tar
+        - sdd-navigator-web.tar
+        
+    # Создаем namespace
+    - name: Create namespace
+      command: kubectl create namespace {{ namespace }}
+      ignore_errors: yes  # не падаем, если уже существует
+      
+    # Деплоим Helm чарт
+    - name: Deploy Helm chart
+      command: |
+        helm upgrade --install sdd-navigator {{ project_dir }}/helm/sdd-navigator \
+          --namespace {{ namespace }} \
+          --create-namespace \
+          --set api.image.pullPolicy=Never \
+          --set web.image.pullPolicy=Never
+          
+    # Ждем, пока все поды запустятся
+    - name: Wait for pods
+      command: kubectl wait --for=condition=ready pod --all -n {{ namespace }} --timeout=300s
+      ignore_errors: yes
+      
+    # Показываем статус подов
+    - name: Show pods status
+      command: kubectl get pods -n {{ namespace }}
+      register: pods
+      
+    - debug:
+        msg: "{{ pods.stdout_lines }}"
+        
+    # Получаем NodePort для доступа к Web
+    - name: Get NodePort
+      command: kubectl get svc sdd-web -n {{ namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+      register: nodeport
+      
+    # Выводим информацию для доступа
+    - debug:
+        msg:
+          - "✅ Deployment completed!"
+          - "🌐 Web доступен: http://{{ ansible_host }}:{{ nodeport.stdout }}"
+          - "🏥 API health: kubectl port-forward -n {{ namespace }} svc/sdd-api 8080:8080"

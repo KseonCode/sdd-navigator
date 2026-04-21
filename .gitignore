@@ -28,7 +28,7 @@ helm/**/Chart.lock
 
 # Ansible
 ansible/*.retry
-ansible/inventory/hosts
+ansible/inventory/hosts.ini
 ansible/.ansible/
 
 # IDE

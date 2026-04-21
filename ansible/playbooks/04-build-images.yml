@@ -1,0 +1,23 @@
+---
+- name: Build Docker images
+  hosts: notebook
+  become: no  # Docker команды без sudo
+  
+  vars:
+    project_dir: /home/{{ ansible_user }}/sdd-navigator
+    
+  tasks:
+    # Собираем образ Rust API
+    - name: Build API image
+      command: docker build -t sdd-navigator-api:latest {{ project_dir }}/app/api
+      
+    # Собираем образ Next.js
+    - name: Build Web image
+      command: docker build -t sdd-navigator-web:latest {{ project_dir }}/app/web
+      
+    # Сохраняем образы в tar-файлы (для импорта в K3s)
+    - name: Save API image
+      command: docker save sdd-navigator-api:latest -o /tmp/sdd-navigator-api.tar
+      
+    - name: Save Web image
+      command: docker save sdd-navigator-web:latest -o /tmp/sdd-navigator-web.tar

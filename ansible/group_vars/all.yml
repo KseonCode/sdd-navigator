@@ -1,0 +1,19 @@
+---
+# Общие переменные для всех хостов
+project_name: sdd-navigator
+namespace: sdd-navigator
+project_dir: /home/{{ ansible_user }}/{{ project_name }}
+
+# Версии компонентов
+k3s_version: v1.28.12+k3s1
+helm_version: >=3.20.0"
+
+# Настройки приложения
+api_image: sdd-navigator-api:latest
+web_image: sdd-navigator-web:latest
+postgres_image: postgres:15-alpine
+
+# Порты
+api_port: 8080
+web_port: 3000
+web_nodeport: 30001

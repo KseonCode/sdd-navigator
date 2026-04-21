@@ -1,0 +1,8 @@
+---
+notebook_ip: 192.168.0.XXX
+notebook_hostname: notebook-vm
+
+notebook_ram_gb: 8
+notebook_cpu_cores: 4
+
+k3s_extra_args: "--write-kubeconfig-mode 644"

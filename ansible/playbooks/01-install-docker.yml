@@ -1,0 +1,96 @@
+---
+- name: Install Docker on RED OS
+  hosts: notebook
+  become: yes
+  
+  tasks:
+    # 1. Проверяем, работает ли Docker
+    - name: Check if Docker is working
+      command: docker ps
+      register: docker_check
+      failed_when: false
+      changed_when: false
+      ignore_errors: yes
+      
+    # 2. Устанавливаем Docker если не работает
+    - name: Install Docker on RED OS
+      when: docker_check.rc != 0
+      block:
+        # Удаление старых пакетов
+        - name: Remove old Docker packages
+          dnf:
+            name:
+              - docker
+              - docker-ce
+              - docker-ce-cli
+              - docker-engine
+              - docker-client
+              - docker-client-latest
+              - docker-common
+              - docker-latest
+              - docker-latest-logrotate
+              - docker-logrotate
+              - docker-selinux
+              - docker-engine-selinux
+              - containerd
+              - containerd.io
+            state: absent
+          ignore_errors: yes
+          
+        # Удаление старых бинарников
+        - name: Remove old Docker binaries
+          file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /usr/local/bin/docker
+            - /usr/local/bin/dockerd
+            - /usr/bin/docker
+            
+        # Удаление старых директорий
+        - name: Remove old Docker directories
+          file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - /var/lib/docker
+            - /etc/docker
+            
+        # Установка Docker
+        - name: Install Docker packages
+          dnf:
+            name:
+              - docker-ce
+              - docker-ce-cli
+            state: present
+            
+        # Запуск сервиса и добавление в автозагрузку
+        - name: Enable and start Docker service
+          systemd:
+            name: docker
+            enabled: yes
+            state: started
+            
+        # Добавление пользователя в группу docker
+        - name: Add user to docker group
+          user:
+            name: "{{ ansible_user }}"
+            groups: docker
+            append: yes
+            
+    # 3. Проверка установки
+    - name: Get Docker info
+      command: docker info
+      register: docker_info
+      changed_when: false
+      
+    - name: Show Docker version
+      command: docker --version
+      register: docker_version
+      changed_when: false
+      
+    - debug:
+        msg:
+          - "✅ Docker installed successfully"
+          - "{{ docker_version.stdout }}"
+          - "Service status: active (running)"
